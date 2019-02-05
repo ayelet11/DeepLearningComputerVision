@@ -1,2 +1,0 @@
-# DeepLearningComputerVision
-Excercises for Course
