@@ -170,8 +170,8 @@ class KNearestNeighbor(object):
       # Store this label in y_pred[i]. Break ties by choosing the smaller     #
       # label.                                                                #
       #########################################################################
-      (values,counts) = np.unique(closest_y,return_counts=True)
-      max_label_location = max(counts)
+      (values,counts) = np.unique(closest_y, return_counts=True)
+      max_label_location, = np.where(counts == max(counts))
       the_label = values[max_label_location]
       y_pred[i] = the_label
       #########################################################################
