@@ -1,1 +1,1 @@
-from Victor import *
+import Victor.Assignment1.cs231n as cs231n
