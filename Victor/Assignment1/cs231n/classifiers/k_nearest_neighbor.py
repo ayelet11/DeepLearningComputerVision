@@ -76,6 +76,7 @@ class KNearestNeighbor(object):
         testRow = X[i]
         subtraction = tarinRow - testRow
         subtraction = abs(subtraction)
+        print(subtraction)
         dists[i, j] = np.sum(subtraction)
         #####################################################################
         #                       END OF YOUR CODE                            #
