@@ -100,12 +100,11 @@ class KNearestNeighbor(object):
       #######################################################################
         
         
-        testRow = X_test[i]
-
-        subtraction = X_train - testRow
+        testRow = X[i]
+        subtraction = self.X_train - testRow
         subtraction = abs(subtraction)
         dists[i,:] = np.sum(subtraction, axis=1)
-  
+
 
 
       #######################################################################
