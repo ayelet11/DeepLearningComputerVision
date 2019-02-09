@@ -74,9 +74,8 @@ class KNearestNeighbor(object):
         #####################################################################
         tarinRow = self.X_train[j]
         testRow = X[i]
-        subtraction = tarinRow - testRow
-        subtraction = abs(subtraction)
-        dists[i, j] = np.sum(subtraction)
+        subtraction = np.square(tarinRow - testRow)
+        dists[i, j] = np.sqrt(np.sum(subtraction))
         #####################################################################
         #                       END OF YOUR CODE                            #
         #####################################################################
@@ -100,10 +99,9 @@ class KNearestNeighbor(object):
       #######################################################################
         
         
-        testRow = X[i]
-        subtraction = self.X_train - testRow
-        subtraction = abs(subtraction)
-        dists[i,:] = np.sum(subtraction, axis=1)
+        testRow = X[i] # shape (3072)
+        subtraction = np.square(self.X_train - testRow) # shape (5000,3072)
+        dists[i,:] = np.sqrt(np.sum(subtraction, axis=1)) # dists.shape: (500,5000), dists[i,:].shape (5000,)
 
 
 
@@ -149,7 +147,7 @@ class KNearestNeighbor(object):
 
     # (a-b)^2 = a^2 -2ab +b^2:
     temp = aEx2sum -2*ab + bEx2sum
-  
+
     dists = np.sqrt(temp)
     
     #########################################################################
