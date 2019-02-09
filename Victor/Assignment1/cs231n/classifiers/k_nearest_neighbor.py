@@ -182,10 +182,9 @@ class KNearestNeighbor(object):
       # Hint: Look up the function numpy.argsort.                             #
       #########################################################################
       
-      # sorted_indexes = np.argsort(dists[i]) # ascending sort and index the original location
-      # closest_y = self.y_train[sorted_indexes] # the labes of the indexes 
-      # closest_y = closest_y[:k]
-      closest_y = np.take(self.y_train, np.argsort(dists[i]))[:k]
+      sorted_indexes = np.argsort(dists[i]) # ascending sort and index the original location
+      closest_y = self.y_train[sorted_indexes] # the labes of the indexes 
+      closest_y = closest_y[:k]
       #########################################################################
       # TODO:                                                                 #
       # Now that you have found the labels of the k nearest neighbors, you    #
@@ -197,9 +196,6 @@ class KNearestNeighbor(object):
       max_label_location, = np.where(counts == max(counts)) # take the max in 'counts', return the array of it's location 
       the_label = values[max_label_location[:1]] # picking the 
       y_pred[i] = the_label
-
-      (values, counts) = np.unique(closest_y, return_counts=True)
-      y_pred[i] = values[np.argmax(counts)]
       #########################################################################
       #                           END OF YOUR CODE                            # 
       #########################################################################
