@@ -84,16 +84,7 @@ class KNearestNeighbor(object):
     num_train = self.X_train.shape[0]
     dists = np.zeros((num_test, num_train))
     for i in xrange(num_test):
-      dist[i, :]=np.linalg.norm(X[i]-self.X_train)
-      #######################################################################
-      # TODO:                                                               #
-      # Compute the l2 distance between the ith test point and all training #
-      # points, and store the result in dists[i, :].                        #
-      #######################################################################
-      pass
-      #######################################################################
-      #                         END OF YOUR CODE                            #
-      #######################################################################
+      dists[i, :] = np.sqrt(np.sum((X[i]-self.X_train)**2, axis=1))
     return dists
 
   def compute_distances_no_loops(self, X):
@@ -105,7 +96,14 @@ class KNearestNeighbor(object):
     """
     num_test = X.shape[0]
     num_train = self.X_train.shape[0]
-    dists = np.zeros((num_test, num_train)) 
+    dists = np.zeros((num_test, num_train))
+
+    X_t2 = np.sum(X**2, axis=1)
+    X_tr2 = np.sum(self.X_train**2, axis=1)
+    X_t2_X_tr2 = np.dot(X, np.transpose(self.X_train))
+    ## (x-y)^2 = x^2 +y^2 - 2xy
+    dists = np.sqrt(X_t2[:, np.newaxis] + X_tr2[np.newaxis, :] -2*X_t2_X_tr2)
+
     #########################################################################
     # TODO:                                                                 #
     # Compute the l2 distance between all test points and all training      #
