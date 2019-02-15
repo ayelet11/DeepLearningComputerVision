@@ -35,13 +35,17 @@ def svm_loss_naive(W, X, y, reg):
       margin = scores[j] - correct_class_score + 1 # note delta = 1
       if margin > 0:
         loss += margin
+        dW[:, j] += X[i]
+        dW[:, y[i]] -= X[i]
 
   # Right now the loss is a sum over all training examples, but we want it
   # to be an average instead so we divide by num_train.
   loss /= num_train
+  dW /= num_train
 
   # Add regularization to the loss.
   loss += reg * np.sum(W * W)
+  dW += 2*reg*W
 
   #############################################################################
   # TODO:                                                                     #
@@ -64,17 +68,36 @@ def svm_loss_vectorized(W, X, y, reg):
   """
   loss = 0.0
   dW = np.zeros(W.shape) # initialize the gradient as zero
+  num_train = X.shape[0]
 
-  #############################################################################
-  # TODO:                                                                     #
-  # Implement a vectorized version of the structured SVM loss, storing the    #
-  # result in loss.                                                           #
-  #############################################################################
-  pass
-  #############################################################################
-  #                             END OF YOUR CODE                              #
-  #############################################################################
+  #  A numpy array of shape (C, N)
+  Y = np.zeros(( W.shape[1], X.shape[0]))
+  correct_class = np.ones((X.shape[0], W.shape[1]))
+  for i in range(len(y)):
+    Y[y[i], i] = 1
+    correct_class[i, y[i]] = 0
 
+  scores = X.dot(W)
+  l1 = np.transpose([np.diagonal(scores.dot(Y))]*scores.shape[1])
+  margin = scores - l1 + np.ones(scores.shape)
+  l2 = np.multiply(np.multiply(margin, margin > 0), correct_class)
+
+  loss = np.sum(l2)/ num_train + reg * np.sum(W * W)
+
+  Xt = np.transpose(X)
+  print (Xt.shape)
+  print(margin.shape)
+  print(Y.shape)
+  print (X.shape)
+
+  L = (margin > 0).astype(int)
+  L[range(0, len(y)), y] = 0
+  L[range(0, len(y)), y] = -1*np.sum(L, axis=1)
+
+  dW = Xt.dot(L)
+  dW /= num_train
+
+  dW += 2 * reg * W
 
   #############################################################################
   # TODO:                                                                     #
