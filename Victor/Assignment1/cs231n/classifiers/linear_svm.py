@@ -1,6 +1,5 @@
 import numpy as np
 from random import shuffle
-from past.builtins import xrange
 
 def svm_loss_naive(W, X, y, reg):
   """
@@ -20,25 +19,34 @@ def svm_loss_naive(W, X, y, reg):
   - loss as single float
   - gradient with respect to weights W; an array of same shape as W
   """
-  dW = np.zeros(W.shape) # initialize the gradient as zero
+ dW = np.zeros(W.shape) # initialize the gradient as zero
 
   # compute the loss and the gradient
   num_classes = W.shape[1]
   num_train = X.shape[0]
   loss = 0.0
-  for i in xrange(num_train):
+  for i in range(num_train):
     scores = X[i].dot(W)
     correct_class_score = scores[y[i]]
-    for j in xrange(num_classes):
+    count = 0
+
+    for j in range(num_classes):
       if j == y[i]:
         continue
       margin = scores[j] - correct_class_score + 1 # note delta = 1
       if margin > 0:
+        dW[:, j] += X[i]
+        count += 1
         loss += margin
+    
+    dW[:, y[i]] += -count * X[i]
 
   # Right now the loss is a sum over all training examples, but we want it
   # to be an average instead so we divide by num_train.
   loss /= num_train
+  dW /= num_train
+  
+  dW += reg * W
 
   # Add regularization to the loss.
   loss += reg * np.sum(W * W)
