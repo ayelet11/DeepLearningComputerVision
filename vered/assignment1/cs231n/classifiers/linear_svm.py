@@ -85,10 +85,6 @@ def svm_loss_vectorized(W, X, y, reg):
   loss = np.sum(l2)/ num_train + reg * np.sum(W * W)
 
   Xt = np.transpose(X)
-  print (Xt.shape)
-  print(margin.shape)
-  print(Y.shape)
-  print (X.shape)
 
   L = (margin > 0).astype(int)
   L[range(0, len(y)), y] = 0

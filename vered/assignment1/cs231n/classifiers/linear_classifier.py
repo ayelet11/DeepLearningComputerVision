@@ -39,8 +39,10 @@ class LinearClassifier(object):
     # Run stochastic gradient descent to optimize W
     loss_history = []
     for it in xrange(num_iters):
-      X_batch = None
-      y_batch = None
+      random_ix =np.arange(num_train)
+      np.random.shuffle(random_ix)
+      X_batch = X[random_ix[:batch_size]]
+      y_batch = y[random_ix[:batch_size]]
 
       #########################################################################
       # TODO:                                                                 #
@@ -64,9 +66,7 @@ class LinearClassifier(object):
 
       # perform parameter update
       #########################################################################
-      # TODO:                                                                 #
-      # Update the weights using the gradient and the learning rate.          #
-      #########################################################################
+      self.W = self.W - learning_rate*grad
       pass
       #########################################################################
       #                       END OF YOUR CODE                                #
@@ -92,6 +92,9 @@ class LinearClassifier(object):
       class.
     """
     y_pred = np.zeros(X.shape[0])
+
+    y_pred = np.argmax(X.dot(self.W), axis=1)
+
     ###########################################################################
     # TODO:                                                                   #
     # Implement this method. Store the predicted labels in y_pred.            #
