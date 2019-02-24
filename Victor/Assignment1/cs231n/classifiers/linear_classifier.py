@@ -7,10 +7,12 @@ from DeepLearningComputerVision.Victor.Assignment1.cs231n.classifiers.softmax im
 class LinearClassifier(object):
 
   def __init__(self):
-    self.W = None
+    self.W = 0
 
   def train(self, X, y, learning_rate=1e-3, reg=1e-5, num_iters=100,
             batch_size=200, verbose=False):
+    print("asdasdasd")
+    
     """
     Train this linear classifier using stochastic gradient descent.
     Inputs:
@@ -28,7 +30,7 @@ class LinearClassifier(object):
     """
     num_train, dim = X.shape
     num_classes = np.max(y) + 1 # assume y takes values 0...K-1 where K is number of classes
-    if self.W is None:
+    if (not hasattr(self,'W')) or  (self.W is None):
       # lazily initialize W
       self.W = 0.001 * np.random.randn(dim, num_classes)
 
