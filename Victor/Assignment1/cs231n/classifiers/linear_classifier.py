@@ -1,4 +1,3 @@
-from _future_ import print_function
 
 import numpy as np
 from cs231n.classifiers.linear_svm import *
