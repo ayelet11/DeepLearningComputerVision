@@ -83,7 +83,7 @@ def svm_loss_vectorized(W, X, y, reg):
   margins = np.maximum(0, scores - np.matrix(yi_scores).T + 1)
   margins[np.arange(num_train),y] = 0
   loss = np.mean(np.sum(margins, axis=1))
-  loss += 0.5 * reg * np.sum(W * W)
+  loss += 0.5 * reg * np.sum(np.multiply(W, W))
 
   #############################################################################
   # Implement a vectorized version of the gradient for the structured SVM     #
