@@ -1,14 +1,12 @@
-from __future__ import print_function
+from _future_ import print_function
 
 import numpy as np
-from DeepLearningComputerVision.Victor.Assignment1.cs231n.classifiers.linear_svm import *
-from DeepLearningComputerVision.Victor.Assignment1.cs231n.classifiers.softmax import *
-from past.builtins import xrange
-
+from cs231n.classifiers.linear_svm import *
+from cs231n.classifiers.softmax import *
 
 class LinearClassifier(object):
 
-  def __init__(self):
+  def _init_(self):
     self.W = None
 
   def train(self, X, y, learning_rate=1e-3, reg=1e-5, num_iters=100,
@@ -38,7 +36,7 @@ class LinearClassifier(object):
 
     # Run stochastic gradient descent to optimize W
     loss_history = []
-    for it in xrange(num_iters):
+    for it in range(num_iters):
       X_batch = None
       y_batch = None
 
@@ -53,7 +51,9 @@ class LinearClassifier(object):
       # Hint: Use np.random.choice to generate indices. Sampling with         #
       # replacement is faster than sampling without replacement.              #
       #########################################################################
-      pass
+      batch_idx = np.random.choice(num_train,batch_size, replace=False)
+      X_batch = X[batch_idx]
+      y_batch = y[batch_idx]
       #########################################################################
       #                       END OF YOUR CODE                                #
       #########################################################################
@@ -67,6 +67,7 @@ class LinearClassifier(object):
       # TODO:                                                                 #
       # Update the weights using the gradient and the learning rate.          #
       #########################################################################
+      self.W += -grad*learning_rate
       pass
       #########################################################################
       #                       END OF YOUR CODE                                #
@@ -96,7 +97,7 @@ class LinearClassifier(object):
     # TODO:                                                                   #
     # Implement this method. Store the predicted labels in y_pred.            #
     ###########################################################################
-    pass
+    y_pred=X.dot(self.W).argmax(axis=1)
     ###########################################################################
     #                           END OF YOUR CODE                              #
     ###########################################################################
@@ -121,8 +122,8 @@ class LinearClassifier(object):
 
 
 class LinearSVM(LinearClassifier):
-  """ A subclass that uses the Multiclass SVM loss function """
-
+  """ A subclass that uses the Multiclass SVM loss function """ 
+  
   def loss(self, X_batch, y_batch, reg):
     return svm_loss_vectorized(self.W, X_batch, y_batch, reg)
 
@@ -132,4 +133,3 @@ class Softmax(LinearClassifier):
 
   def loss(self, X_batch, y_batch, reg):
     return softmax_loss_vectorized(self.W, X_batch, y_batch, reg)
-
