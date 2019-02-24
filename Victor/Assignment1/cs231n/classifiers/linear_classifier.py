@@ -1,7 +1,8 @@
+from __future__ import print_function
 
 import numpy as np
-from cs231n.classifiers.linear_svm import *
-from cs231n.classifiers.softmax import *
+from DeepLearningComputerVision.Victor.Assignment1.cs231n.classifiers.linear_svm import *
+from DeepLearningComputerVision.Victor.Assignment1.cs231n.classifiers.softmax import *
 
 class LinearClassifier(object):
 
