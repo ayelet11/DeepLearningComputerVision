@@ -35,15 +35,18 @@ def softmax_loss_naive(W, X, y, reg):
 
   loss = 0.0
   for i in range(num_train):
-    scores = X[i].dot(W)
-    correct_class_score = scores[y[i]]
-
+    scores = X[i].dot(W) # this is the prediction of training sample i, for each class
     scores -= np.max(scores)
-    sum = np.sum(np.exp(scores))
+    # calculate the probabilities that the sample belongs to each class
+    probabilities = np.exp(scores) / np.sum(np.exp(scores))
+    # loss is the log of the probability of the correct class
+    loss += -np.log(probabilities[y[i]])
 
-    log = np.log(sum)
+    probabilities[y[i]] -= 1 # calculate p-1 and later we'll put the negative back
     
-    loss += (-1 * correct_class_score + log)
+    # dW is adjusted by each row being the X[i] pixel values by the probability vector
+    for j in range(num_classes):
+      dW[:,j] += X[i,:] * probabilities[j]
 
   # Right now the loss is a sum over all training examples, but we want it
   # to be an average instead so we divide by num_train.
@@ -71,14 +74,28 @@ def softmax_loss_vectorized(W, X, y, reg):
   # Initialize the loss and gradient to zero.
   loss = 0.0
   dW = np.zeros_like(W)
-
+  loss = 0.0
   #############################################################################
   # TODO: Compute the softmax loss and its gradient using no explicit loops.  #
   # Store the loss in loss and the gradient in dW. If you are not careful     #
   # here, it is easy to run into numeric instability. Don't forget the        #
   # regularization!                                                           #
   #############################################################################
-  pass
+  num_classes = W.shape[1]
+  num_train = X.shape[0]
+
+  scores = X.dot(W) # this is the prediction of training sample i, for each class
+  scores -= np.max(scores, axis=1)
+  # calculate the probabilities that the sample belongs to each class
+  probabilities = np.exp(scores) / np.sum(np.exp(scores))
+
+  correct_class_probabilities = probabilities[range(num_train),y]
+  loss = np.sum(-np.log(correct_class_probabilities)) / num_train
+  
+  loss += 0.5 * reg * np.sum(W*W) 
+
+  probabilities[range(num_train),y] -= 1
+  dW = X.T.dot(probabilities) / num_train
   #############################################################################
   #                          END OF YOUR CODE                                 #
   #############################################################################
