@@ -85,7 +85,7 @@ def softmax_loss_vectorized(W, X, y, reg):
   num_train = X.shape[0]
 
   scores = X.dot(W) # this is the prediction of training sample i, for each class
-  scores -= np.max(scores, axis=1)
+  scores -= np.max(scores, axis=1 ,keepdims=True)
   # calculate the probabilities that the sample belongs to each class
   probabilities = np.exp(scores) / np.sum(np.exp(scores))
 
