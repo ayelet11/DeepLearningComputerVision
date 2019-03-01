@@ -35,10 +35,15 @@ class TwoLayerNet(object):
     - hidden_size: The number of neurons H in the hidden layer.
     - output_size: The number of classes C.
     """
+
+    std_W1 = 1/np.sqrt(input_size)
+    std_w2 = 1/np.sqrt(hidden_size)
+    print (std_w2)
+    print (std_W1)
     self.params = {}
-    self.params['W1'] = std * np.random.randn(input_size, hidden_size)
+    self.params['W1'] = std_W1 * np.random.randn(input_size, hidden_size)
     self.params['b1'] = np.zeros(hidden_size)
-    self.params['W2'] = std * np.random.randn(hidden_size, output_size)
+    self.params['W2'] = std_w2 * np.random.randn(hidden_size, output_size)
     self.params['b2'] = np.zeros(output_size)
 
   def loss(self, X, y=None, reg=0.0):
@@ -82,24 +87,38 @@ class TwoLayerNet(object):
     #############################################################################
     
     # If the targets are not given then jump out, we're done
+
+    z1 = X.dot(W1) + b1
+
+    #activation layer:
+    a1 = np.maximum(0, z1)
+
+    z2 = a1.dot(W2) + b2
+
+    scores = z2
+
     if y is None:
       return scores
 
     # Compute the loss
     loss = None
-    #############################################################################
-    # TODO: Finish the forward pass, and compute the loss. This should include  #
-    # both the data loss and L2 regularization for W1 and W2. Store the result  #
-    # in the variable loss, which should be a scalar. Use the Softmax           #
-    # classifier loss.                                                          #
-    #############################################################################
-    pass
-    #############################################################################
-    #                              END OF YOUR CODE                             #
-    #############################################################################
+
+    num_train = X.shape[0]
+    scores = np.exp(scores - np.max(scores))
+    loss = np.sum(-np.log(scores[range(X.shape[0]), y] / np.sum(scores, axis=1))) / num_train + reg * np.sum(W1 * W1) + reg * np.sum(W2*W2)
 
     # Backward pass: compute gradients
     grads = {}
+
+    z2_ratio = np.exp(z2) / np.sum(np.exp(z2), axis=1, keepdims=True)
+
+    Y = np.zeros(z2_ratio.shape)
+    Y[range(len(y)), y] = -1
+
+    grads['b2'] = np.sum((Y + z2_ratio)/num_train, axis=0)
+    grads['W2'] = 2*reg*W2 + np.transpose(a1).dot(Y + z2_ratio)/num_train
+    grads['W1'] = 2*reg*W1 + np.transpose(X).dot(np.multiply(z1 >= 0, (Y + z2_ratio).dot(np.transpose(W2))/num_train))
+    grads['b1'] = np.sum(np.multiply(z1 >= 0, (Y + z2_ratio).dot(np.transpose(W2))/num_train), axis=0)
     #############################################################################
     # TODO: Compute the backward pass, computing the derivatives of the weights #
     # and biases. Store the results in the grads dictionary. For example,       #
@@ -115,7 +134,7 @@ class TwoLayerNet(object):
   def train(self, X, y, X_val, y_val,
             learning_rate=1e-3, learning_rate_decay=0.95,
             reg=5e-6, num_iters=100,
-            batch_size=200, verbose=False):
+            batch_size=200, mu=0.9, verbose=False):
     """
     Train this neural network using stochastic gradient descent.
 
@@ -141,36 +160,27 @@ class TwoLayerNet(object):
     train_acc_history = []
     val_acc_history = []
 
-    for it in xrange(num_iters):
-      X_batch = None
-      y_batch = None
+    v = {}
+    for key in self.params.keys():
+      v[key] = 0
 
-      #########################################################################
-      # TODO: Create a random minibatch of training data and labels, storing  #
-      # them in X_batch and y_batch respectively.                             #
-      #########################################################################
-      pass
-      #########################################################################
-      #                             END OF YOUR CODE                          #
-      #########################################################################
+    for it in xrange(num_iters):
+      random_ix = np.arange(num_train)
+      np.random.shuffle(random_ix)
+      X_batch = X[random_ix[:batch_size]]
+      y_batch = y[random_ix[:batch_size]]
 
       # Compute loss and gradients using the current minibatch
       loss, grads = self.loss(X_batch, y=y_batch, reg=reg)
       loss_history.append(loss)
 
-      #########################################################################
-      # TODO: Use the gradients in the grads dictionary to update the         #
-      # parameters of the network (stored in the dictionary self.params)      #
-      # using stochastic gradient descent. You'll need to use the gradients   #
-      # stored in the grads dictionary defined above.                         #
-      #########################################################################
-      pass
-      #########################################################################
-      #                             END OF YOUR CODE                          #
-      #########################################################################
+      for key in self.params.keys():
+        v[key] = v[key]*mu - learning_rate*grads[key]
+        self.params[key] += v[key]
 
       if verbose and it % 100 == 0:
         print('iteration %d / %d: loss %f' % (it, num_iters, loss))
+
 
       # Every epoch, check train and val accuracy and decay learning rate.
       if it % iterations_per_epoch == 0:
@@ -204,7 +214,16 @@ class TwoLayerNet(object):
       the elements of X. For all i, y_pred[i] = c means that X[i] is predicted
       to have class c, where 0 <= c < C.
     """
-    y_pred = None
+    z1 = X.dot(self.params['W1']) + self.params['b1']
+
+    # activation layer:
+    a1 = np.maximum(0, z1)
+
+    z2 = a1.dot(self.params['W2']) + self.params['b2']
+
+    scores = z2
+
+    y_pred = np.argmax(scores, axis=1)
 
     ###########################################################################
     # TODO: Implement this function; it should be VERY simple!                #
