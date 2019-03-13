@@ -38,12 +38,10 @@ class TwoLayerNet(object):
 
     std_W1 = 1/np.sqrt(input_size)
     std_w2 = 1/np.sqrt(hidden_size)
-    print (std_w2)
-    print (std_W1)
     self.params = {}
-    self.params['W1'] = std_W1 * np.random.randn(input_size, hidden_size)
+    self.params['W1'] = std * np.random.randn(input_size, hidden_size)
     self.params['b1'] = np.zeros(hidden_size)
-    self.params['W2'] = std_w2 * np.random.randn(hidden_size, output_size)
+    self.params['W2'] = std * np.random.randn(hidden_size, output_size)
     self.params['b2'] = np.zeros(output_size)
 
   def loss(self, X, y=None, reg=0.0):
@@ -110,7 +108,7 @@ class TwoLayerNet(object):
     # Backward pass: compute gradients
     grads = {}
 
-    z2_ratio = np.exp(z2) / np.sum(np.exp(z2), axis=1, keepdims=True)
+    z2_ratio = np.exp(z2 - np.max(z2)) / np.sum(np.exp(z2- np.max(z2)), axis=1, keepdims=True)
 
     Y = np.zeros(z2_ratio.shape)
     Y[range(len(y)), y] = -1
